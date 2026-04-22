@@ -1,27 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "./assets/vite.svg";
+import heroImg from "./assets/hero.png";
+import "./App.css";
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Signup from './components/Signup'
-import Login from './components/Login'
-import Alumnis from './components/Alumnis'
-import Navbar from './components/Navbar'
-import Landing from './components/Landing'
-import InternshipsJobs from './components/InternshipsJobs'
-import Profile from './components/Profile'
-import MyConnections from './components/MyConnections'
-import Follow from './components/Follow'
-import Protected from './components/Protected'
-import Dashboard from './components/admin/Dashboard'
-import AlumniRequests from './components/admin/AlumniRequests'
-import EditProfile from './components/EditProfile'
-import Chat from './components/Chat'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Signup from "./components/Signup";
+import Login from "./components/Login";
+import Alumnis from "./components/Alumnis";
+import Navbar from "./components/Navbar";
+import Landing from "./components/Landing";
+import InternshipsJobs from "./components/InternshipsJobs";
+import Profile from "./components/Profile";
+import MyConnections from "./components/MyConnections";
+import Follow from "./components/Follow";
+import Protected from "./components/Protected";
+import Dashboard from "./components/admin/Dashboard";
+import AlumniRequests from "./components/admin/AlumniRequests";
+import EditProfile from "./components/EditProfile";
+import Chat from "./components/Chat";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
     <>
@@ -39,7 +39,8 @@ function App() {
           <Route path="/chat" element={<Chat />} />
           <Route path="/follow" element={<Follow />} />
           <Route path="/editprofile" element={<EditProfile />} />
-        {/* Admin Routes */}
+          <Route path="/requests" element={<AlumniRequests />} />
+          {/* Admin Routes */}
           <Route
             path="/admin/dashboard"
             element={
@@ -57,11 +58,9 @@ function App() {
             }
           />
         </Routes>
-
       </BrowserRouter>
-
     </>
-  )
+  );
 }
 
-export default App
+export default App;
