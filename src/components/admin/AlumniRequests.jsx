@@ -1,8 +1,8 @@
 import React, { use, useEffect } from "react";
 import AlimniDetails from "../AlimniDetails";
 import ToolTip from "../UI/ToolTip";
-import { CircleCheckBig } from 'lucide-react';
-import { CircleX } from 'lucide-react';
+import { CircleCheckBig } from "lucide-react";
+import { CircleX } from "lucide-react";
 import toast from "react-hot-toast";
 import axios from "axios";
 
@@ -12,46 +12,53 @@ export default function AlumniRequests() {
   const [selectedAlumni, setSelectedAlumni] = React.useState(null);
   const [alumnis, setAlumnis] = React.useState([]);
 
-
   useEffect(() => {
-    
-    try {
-      const fetchAlumniRequests = async () => {
-        const res = await axios.get("http://localhost:5000/api/user");
-        setAlumnis(res.data);
-      };
+    const fetchAlumni = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-      fetchAlumniRequests();
-    } catch (error) {
-      console.log("Error fetching alumni requests:", error);
-    }
+        const res = await axios.get(`http://localhost:5000/user/allprofile`, {
+          headers: {
+            Authorization: token,
+          },
+        });
+
+        setAlumnis(res.data);
+      } catch (error) {
+        console.log("Error fetching alumni:", error);
+      }
+    };
+
+    fetchAlumni();
   }, []);
 
   const filteredAlumnis = (filter) => {
-  return alumnis.filter((alumni) => {
-    const searchString =
-      `${alumni.fullName} ${alumni.graduationYear} ${alumni.currentPosition} ${alumni.email}`.toLowerCase();
+    return alumnis.filter((alumni) => {
+      const searchString =
+        `${alumni.fullName} ${alumni.graduationYear} ${alumni.currentPosition} ${alumni.email}`.toLowerCase();
 
-    return (
-      searchString.includes(filter.toLowerCase()) &&
-      alumni.role !== "admin" &&
-      alumni.isApproved === "pending"
-    );
-  });
-};
+      return (
+        searchString.includes(filter.toLowerCase()) &&
+        alumni.role !== "admin" &&
+        alumni.isApproved === "pending"
+      );
+    });
+  };
 
-const handleApproval = async (uid, remark) => {
-  try {
-    const res = await axios.patch(
-      `http://localhost:5000/api/user/toggle-approve/${uid}/${remark}`
-    );
-    toast.success(`Alumni request ${remark}!`);
-    setOpen(false);
-  } catch (error) {
-    console.log("Error toggling approval:", error);
-    toast.error("Failed to update alumni request.");
+  const handleApproval = async(id, status) =>{
+
+    try{
+      const res = await axios.patch(`http://localhost:5000/user/approve/${id}`,{status : status})
+      if (res.status === 200){
+        alert("Approved !!")
+      }
+      setOpen(false)
+      window.location.reload();
+    } catch (err) {
+      console.log(err)
+    }
+
   }
-};
 
   return (
     <div>
@@ -102,50 +109,50 @@ const handleApproval = async (uid, remark) => {
       <section className="mt-8 display flex gap-3 flex-wrap justify-center">
         {filteredAlumnis(filterItem).length > 0 ? (
           filteredAlumnis(filterItem).map((alumni, i) => (
-              <div
+            <div
               key={i}
-                className="container w-sm lg:w-6xl my-2 p-2 flex justify-between gap-2 shadow-lg rounded-lg hover:scale-102 transition-transform duration-300 cursor-pointer"
-                onClick={() => {
-                  setSelectedAlumni(alumni);
-                  setOpen(true);
-                }}
-              >
-                <div className="flex gap-2">
-                  <img
-                    src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
-                    alt="Alumni"
-                    className="h-15 w-15 rounded-full"
-                  />
-                  <h4 className="text-md lg:text-2xl mt-4">{alumni.fullName}</h4>
-                  </div>
+              className="container w-sm lg:w-6xl my-2 p-2 flex justify-between gap-2 shadow-lg rounded-lg hover:scale-102 transition-transform duration-300 cursor-pointer"
+              onClick={() => {
+                setSelectedAlumni(alumni);
+                setOpen(true);
+              }}
+            >
+              <div className="flex gap-2">
+                <img
+                  src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
+                  alt="Alumni"
+                  className="h-15 w-15 rounded-full"
+                />
+                <h4 className="text-md lg:text-2xl mt-4">{alumni.name}</h4>
+              </div>
 
-                <div className="flex gap-4">
-                  <div className="mt-4">
-                    <ToolTip
-                      className="tooltip"
-                      data-tip="Accept request"
-                      dataTip={"Accept request"}
-                    >
-                      <CircleCheckBig
-                        className="text-2xl cursor-pointer text-green-500"
-                        onClick={() => handleApproval(alumni._id, "approved")}
-                      />
-                    </ToolTip>
-                  </div>
-                  <div className="mt-4">
-                    <ToolTip
-                      className="tooltip"
-                      data-tip="Reject request"
-                      dataTip={"Reject request"}
-                    >
-                      <CircleX
-                        className="text-2xl cursor-pointer text-red-500"
-                        onClick={() => handleApproval(alumni._id, "rejected")}
-                      />
-                    </ToolTip>
-                  </div>
+              <div className="flex gap-4">
+                <div className="mt-4">
+                  <ToolTip
+                    className="tooltip"
+                    data-tip="Accept request"
+                    dataTip={"Accept request"}
+                  >
+                    <CircleCheckBig
+                      className="text-2xl cursor-pointer text-green-500"
+                      onClick={() => handleApproval(alumni._id, "approved")}
+                    />
+                  </ToolTip>
+                </div>
+                <div className="mt-4">
+                  <ToolTip
+                    className="tooltip"
+                    data-tip="Reject request"
+                    dataTip={"Reject request"}
+                  >
+                    <CircleX
+                      className="text-2xl cursor-pointer text-red-500"
+                      onClick={() => handleApproval(alumni._id, "rejected")}
+                    />
+                  </ToolTip>
                 </div>
               </div>
+            </div>
           ))
         ) : (
           <p className="text-gray-600 text-center w-full">
@@ -158,7 +165,7 @@ const handleApproval = async (uid, remark) => {
         setOpen={setOpen}
         alumni={selectedAlumni}
         approve={handleApproval}
-        type="request"
+        target={false}
       />
     </div>
   );
