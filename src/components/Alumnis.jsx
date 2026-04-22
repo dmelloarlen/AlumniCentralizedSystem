@@ -5,6 +5,7 @@ import { CiShare1 } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "axios";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function Alumnis() {
   const [open, setOpen] = React.useState(false);
@@ -19,7 +20,7 @@ export default function Alumnis() {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get(`http://localhost:5000/user/allprofile`, {
+        const res = await axios.get(`${BASE_URL}/user/allprofile`, {
           headers: {
             Authorization: token,
           },

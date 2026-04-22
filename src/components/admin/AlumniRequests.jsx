@@ -5,6 +5,7 @@ import { CircleCheckBig } from "lucide-react";
 import { CircleX } from "lucide-react";
 import toast from "react-hot-toast";
 import axios from "axios";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function AlumniRequests() {
   const [filterItem, setFilterItem] = React.useState("");
@@ -17,7 +18,7 @@ export default function AlumniRequests() {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get(`http://localhost:5000/user/allprofile`, {
+        const res = await axios.get(`${BASE_URL}/user/allprofile`, {
           headers: {
             Authorization: token,
           },
@@ -48,7 +49,7 @@ export default function AlumniRequests() {
   const handleApproval = async(id, status) =>{
 
     try{
-      const res = await axios.patch(`http://localhost:5000/user/approve/${id}`,{status : status})
+      const res = await axios.patch(`${BASE_URL}/user/approve/${id}`,{status : status})
       if (res.status === 200){
         alert("Approved !!")
       }

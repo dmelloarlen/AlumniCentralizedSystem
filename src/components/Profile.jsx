@@ -4,6 +4,7 @@ import { CreatePost, PostVacancy } from "./ProfilePopups";
 import { use } from "react";
 import { useEffect } from "react";
 import axios from "axios";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function Profile() {
   const [jobOpen, setJobOpen] = React.useState(false);
@@ -22,11 +23,11 @@ export default function Profile() {
         let res;
 
         if (id) {
-          res = await axios.get(`http://localhost:5000/user/profile/${id}`);
+          res = await axios.get(`${BASE_URL}/user/profile/${id}`);
         } else {
           const token = localStorage.getItem("token");
 
-          res = await axios.get(`http://localhost:5000/user/profile`, {
+          res = await axios.get(`${BASE_URL}/user/profile`, {
             headers: {
               Authorization: token,
             },

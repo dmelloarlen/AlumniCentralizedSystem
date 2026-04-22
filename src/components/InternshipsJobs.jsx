@@ -1,49 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// const internshipsJobs = [
-//     {
-//         title: "Software Engineer Intern",
-//         company: "TechCorp",
-//         location: "San Francisco, CA",
-//         type: "Internship",
-//         mode: "On-site",
-//         description: "Join our dynamic team as a Software Engineer Intern and work on cutting-edge projects in a collaborative environment.",
-//         applyLink: "https://techcorp.com/careers/software-engineer-intern",
-//         ref: "alumni1"
-//     },
-//     {
-//         title: "Product Manager Intern",
-//         company: "InnovateX",
-//         location: "New York, NY",
-//         type: "Internship",
-//         mode: "On-site",
-//         description: "As a Product Manager Intern at InnovateX, you will have the opportunity to shape the future of our products and gain hands-on experience in product management.",
-//         applyLink: "https://innovatex.com/careers/product-manager-intern",
-//         ref: "alumni2"
-//     },
-//     {
-//         title: "Frontend Developer",
-//         company: "WebSolutions",
-//         location: "Remote",
-//         type: "Full-time",
-//         mode: "Remote",
-//         description: "We are seeking a skilled Frontend Developer to join our remote team and help us create stunning web applications for our clients.",
-//         applyLink: "https://websolutions.com/careers/frontend-developer",
-//         ref: "alumni3"
-//     },
-//     {
-//         title: "Data Analyst",
-//         company: "DataInsights",
-//         location: "Chicago, IL",
-//         type: "Full-time",
-//         mode: "On-site",
-//         description: "Join our data analytics team as a Data Analyst and help drive business decisions through insightful data analysis.",
-//         applyLink: "https://datainsights.com/careers/data-analyst",
-//         ref: "alumni4"
-//     }
-// ];
 
 export default function InternshipsJobs() {
   const [filterItem, setFilterItem] = React.useState("");
@@ -54,7 +13,7 @@ export default function InternshipsJobs() {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/jobs");
+        const res = await axios.get(`${BASE_URL}/jobs`);
 
         if (res.status === 200) {
           setJobs(res.data || []);

@@ -13,6 +13,7 @@ import logo from "../assets/logo.png";
 import { FiLogIn } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import axios from "axios";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const navigationUser = [
   { name: "Alumnis", href: "/alumnis", current: false },
@@ -41,7 +42,7 @@ export default function Navbar() {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get(`http://localhost:5000/user/Profile`, {
+        const res = await axios.get(`${BASE_URL}/user/Profile`, {
           headers: {
             Authorization: token,
           },

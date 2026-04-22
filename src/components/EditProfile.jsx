@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function EditProfile() {
   const [loading, setLoading] = useState(true);
@@ -50,7 +51,7 @@ useEffect(() => {
       const token = localStorage.getItem("token")
 
       const res = await axios.get(
-        "http://localhost:5000/user/profile",
+        `${BASE_URL}/user/profile`,
         {
           headers: {
             Authorization: token
@@ -127,7 +128,7 @@ const handleSave = async () => {
     }
 
     const res = await axios.patch(
-      "http://localhost:5000/user/profile",
+      `${BASE_URL}/user/profile`,
       payload,
       {
         headers: {

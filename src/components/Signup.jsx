@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const BATCHES = ["2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015"];
 
@@ -99,7 +100,7 @@ const handleSubmit = async () => {
     console.log(payload)
 
     try {
-      await axios.post("http://localhost:5000/auth/signup", payload);
+      await axios.post(`${BASE_URL}/auth/signup`, payload);
       alert("Signup Successful");
       navigate('/')
     } catch (err) {

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const InputField = ({ label, id, type = "text", placeholder, value, onChange, error, icon, rightEl, focused, onFocus, onBlur }) => (
   <div className="flex flex-col gap-1">
@@ -66,7 +67,7 @@ export default function Login() {
     };
 
     try {
-      const res = await axios.post("http://localhost:5000/auth/login", payload)
+      const res = await axios.post(`${BASE_URL}/auth/login`, payload)
       console.log(res)
       if(res){
         localStorage.setItem("token",res.data.token)

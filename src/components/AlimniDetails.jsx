@@ -13,6 +13,7 @@ import { FaSquareXTwitter } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { RxCross1 } from "react-icons/rx";
 import axios from "axios";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function AlumniDetails({
   open,
@@ -28,7 +29,7 @@ export default function AlumniDetails({
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get(`http://localhost:5000/user/Profile`, {
+        const res = await axios.get(`${BASE_URL}/user/Profile`, {
           headers: {
             Authorization: token,
           },
@@ -48,7 +49,7 @@ export default function AlumniDetails({
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/user/connect",
+        `${BASE_URL}/user/connect`,
         { receiverId: id },
         {
           headers: {
@@ -175,7 +176,8 @@ export default function AlumniDetails({
                         onClick={() => {
                           updateConnection(alumni?._id);
                         }}
-                      >
+                        disabled={isUserConnected(alumni?._id)}
+                        >
                         {isUserConnected(alumni?._id)
                           ? "Connect +"
                           : "Conected"}

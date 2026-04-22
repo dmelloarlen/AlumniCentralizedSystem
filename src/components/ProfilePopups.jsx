@@ -13,6 +13,7 @@ import { FaSquareXTwitter } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { RxCross1 } from "react-icons/rx";
 import axios from "axios";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const PostVacancy = ({ open, setOpen }) => {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ export const PostVacancy = ({ open, setOpen }) => {
     }
 
     try {
-      const res = await axios.post(`http://localhost:5000/jobs`, formData, {
+      const res = await axios.post(`${BASE_URL}/jobs`, formData, {
         headers: {
           Authorization: token,
         },

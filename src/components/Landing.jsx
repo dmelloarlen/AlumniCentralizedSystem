@@ -189,7 +189,6 @@ export default function Landing() {
 
         <div className="mt-10 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 border-t border-slate-200 pt-4">
           <p>© 2026 Alumni Portal. All rights reserved.</p>
-          <p>Built by Arlen • Fahad • Hamza • Hansy</p>
         </div>
       </footer>
     </div>

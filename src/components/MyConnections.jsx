@@ -4,6 +4,7 @@ import { CiChat1 } from "react-icons/ci";
 import axios from "axios";
 import { CircleCheckBig, CircleX } from "lucide-react";
 import ToolTip from "./UI/ToolTip";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 export default function MyConnections() {
@@ -17,7 +18,7 @@ export default function MyConnections() {
         const token = localStorage.getItem("token");
 
         const res = await axios.get(
-          "http://localhost:5000/user/connect/requests",
+          `${BASE_URL}/user/connect/requests`,
           {
             headers: {
               Authorization: token,
@@ -45,7 +46,7 @@ export default function MyConnections() {
       const token = localStorage.getItem("token");
 
       const res = await axios.patch(
-        "http://localhost:5000/user/connect/respond",
+        `${BASE_URL}/user/connect/respond`,
         {
           senderId,
           action,
