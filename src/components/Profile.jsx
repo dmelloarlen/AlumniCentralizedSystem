@@ -20,13 +20,10 @@ export default function Profile() {
     const fetchData = async () => {
       try {
         let res;
-        console.log(id)
 
         if (id) {
-          // PUBLIC PROFILE (no token)
           res = await axios.get(`http://localhost:5000/user/profile/${id}`);
         } else {
-          // CURRENT USER (requires token)
           const token = localStorage.getItem("token");
 
           res = await axios.get(`http://localhost:5000/user/profile`, {
@@ -227,3 +224,4 @@ export default function Profile() {
     </div>
   );
 }
+  
