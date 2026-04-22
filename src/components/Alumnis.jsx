@@ -34,8 +34,6 @@ export default function Alumnis() {
     fetchAlumni();
   }, []);
 
-  console.log(alumnis)
-
   const filteredAlumnis = (filter) => {
       return alumnis.filter((alumni) => {
         const searchString =
@@ -119,9 +117,9 @@ export default function Alumnis() {
               <p className="text-gray-600 mb-1">
                 Graduated: {alumni.graduationYear}
               </p>
-              <p className="text-gray-600 mb-1">
+              {alumni.currentdetails && <p className="text-gray-600 mb-1">
                 Current Position: {alumni.currentdetails.designation + " at " + alumni.currentdetails.company}
-              </p>
+              </p>}
               <p className="text-gray-600">
                 Email:
                 <a

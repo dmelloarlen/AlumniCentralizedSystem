@@ -11,37 +11,6 @@ const pieData = {
   ],
 };
 
-const alumniData = [
-  {
-    name: "Amit Sharma",
-    company: "Google",
-    role: "Software Engineer",
-    domain: "AI / ML",
-    img: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
-  },
-  {
-    name: "Neha Verma",
-    company: "Amazon",
-    role: "SDE",
-    domain: "Backend",
-    img: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
-  },
-  {
-    name: "Rahul Mehta",
-    company: "Microsoft",
-    role: "Data Scientist",
-    domain: "Data Science",
-    img: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
-  },
-  {
-    name: "Sneha Iyer",
-    company: "Flipkart",
-    role: "Product Manager",
-    domain: "Product",
-    img: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
-  },
-];
-
 export default function Landing() {
   return (
     <div>
@@ -170,40 +139,6 @@ export default function Landing() {
             meetings within the platform, ensuring professional and organized
             interactions.
           </p>
-        </div>
-      </section>
-
-      {/* 🔥 ALUMNI */}
-      <section className="mt-14 px-8 mb-16">
-        <h2 className="text-2xl font-semibold text-slate-900 text-center mb-8">
-          Connect with Top Alumni
-        </h2>
-
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {alumniData.map((alumni, i) => (
-            <div
-              key={i}
-              className="rounded-3xl bg-slate-50 p-6 shadow-sm ring-1 ring-slate-200 text-center hover:shadow-lg hover:-translate-y-1 transition"
-            >
-              <img
-                src={alumni.img}
-                className="mx-auto rounded-full mb-4 w-20 h-20 object-cover"
-              />
-
-              <h3 className="text-lg font-semibold text-slate-900 underline">
-                {alumni.name}
-              </h3>
-
-              <p className="text-sm text-slate-600">{alumni.company}</p>
-              <p className="text-sm text-slate-600">{alumni.role}</p>
-
-              <p className="text-xs text-slate-500 mt-2">{alumni.domain}</p>
-
-              <button className="mt-4 px-4 py-2 rounded-full bg-slate-900 text-white text-sm hover:bg-slate-700 transition">
-                Connect
-              </button>
-            </div>
-          ))}
         </div>
       </section>
 

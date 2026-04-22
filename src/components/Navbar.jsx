@@ -11,12 +11,20 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { FiLogIn } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-const navigation = [
-  { name: "Dashboard", href: "/admin/dashboard", current: true },
+const navigationUser = [
   { name: "Alumnis", href: "/alumnis", current: false },
   { name: "Internships / Jobs", href: "/internships-jobs", current: false },
   { name: "My Connections", href: "/connections", current: false },
+];
+
+const navigationAdmin = [
+  { name: "Dashboard", href: "/admin/dashboard", current: true },
+  { name: "Alumnis", href: "/alumnis", current: false },
+  { name: "Internships / Jobs", href: "/internships-jobs", current: false },
+  { name: "Alumni Requestes", href: "/requests", current: false },
 ];
 
 function classNames(...classes) {
@@ -24,8 +32,29 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
+  const [alumni, setAlumni] = useState();
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchAlumni = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await axios.get(`http://localhost:5000/user/Profile`, {
+          headers: {
+            Authorization: token,
+          },
+        });
+
+        setAlumni(res.data);
+      } catch (error) {
+        console.log("Error fetching alumni:", error);
+      }
+    };
+
+    fetchAlumni();
+  }, []);
 
   return (
     <Disclosure
@@ -52,16 +81,15 @@ export default function Navbar() {
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex shrink-0 items-center">
               <Link to="/">
-                <img
-                  alt="Your Company"
-                  src={logo}
-                  className="h-8 w-auto"
-                />
+                <img alt="Your Company" src={logo} className="h-8 w-auto" />
               </Link>
             </div>
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
-                {navigation.map((item) => (
+                {(alumni?.role != "admin"
+                  ? navigationUser
+                  : navigationAdmin
+                ).map((item) => (
                   <Link
                     key={item.name}
                     to={item.href}
@@ -92,48 +120,51 @@ export default function Navbar() {
             </button>
 
             {localStorage.getItem("token") ? (
-            <Menu as="div" className="relative ml-3">
-              <MenuButton className="relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 cursor-pointer">
-                <span className="absolute -inset-1.5" />
-                <span className="sr-only">Open user menu</span>
-                <img
-                  alt=""
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                  className="size-8 rounded-full bg-gray-800 outline -outline-offset-1 outline-white/10"
-                />
-              </MenuButton>
+              <Menu as="div" className="relative ml-3">
+                <MenuButton className="relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 cursor-pointer">
+                  <span className="text-white px-2 text-xl">
+                    {alumni?.name.split(" ")[0]}
+                  </span>
+                  <span className="absolute -inset-1.5" />
+                  <span className="sr-only">Open user menu</span>
+                  <img
+                    alt=""
+                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    className="size-8 rounded-full bg-gray-800 outline -outline-offset-1 outline-white/10"
+                  />
+                </MenuButton>
 
-              <MenuItems
-                transition
-                className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg outline outline-black/5 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in bg-gradient-to-r from-[#1a4fba] to-[#2563eb] dark:shadow-none dark:-outline-offset-1 dark:outline-white/10"
-              >
-                <MenuItem>
-                  <Link
-                    to="/profile"
-                    className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5"
-                  >
-                    Your profile
-                  </Link>
-                </MenuItem>
-                <MenuItem>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5"
-                  >
-                    Settings
-                  </a>
-                </MenuItem>
-                <MenuItem>
-                  <Link
-                    to="/login"
-                    className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5"
-                  >
-                    Sign in
-                  </Link>
-                </MenuItem>
-              </MenuItems>
-            </Menu>) : (
-              <FiLogIn color="white" className="w-6 h-6 cursor-pointer" onClick={() => navigate('/login')}/>
+                <MenuItems
+                  transition
+                  className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg outline outline-black/5 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in bg-gradient-to-r from-[#1a4fba] to-[#2563eb] dark:shadow-none dark:-outline-offset-1 dark:outline-white/10"
+                >
+                  <MenuItem>
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5"
+                    >
+                      Your profile
+                    </Link>
+                  </MenuItem>
+                  <MenuItem>
+                    <div
+                      onClick={() => {
+                        localStorage.removeItem("token");
+                        window.location.reload();
+                      }}
+                      className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5"
+                    >
+                      Log out
+                    </div>
+                  </MenuItem>
+                </MenuItems>
+              </Menu>
+            ) : (
+              <FiLogIn
+                color="white"
+                className="w-6 h-6 cursor-pointer"
+                onClick={() => navigate("/login")}
+              />
             )}
           </div>
         </div>
@@ -141,22 +172,24 @@ export default function Navbar() {
 
       <DisclosurePanel className="sm:hidden">
         <div className="space-y-1 px-2 pt-2 pb-3">
-          {navigation.map((item) => (
-            <DisclosureButton
-              key={item.name}
-              as="a"
-              href={item.href}
-              aria-current={item.current ? "page" : undefined}
-              className={classNames(
-                item.current
-                  ? "bg-gray-900 text-white dark:bg-gray-950/50"
-                  : "text-gray-300 hover:bg-white/5 hover:text-white",
-                "block rounded-md px-3 py-2 text-base font-medium",
-              )}
-            >
-              {item.name}
-            </DisclosureButton>
-          ))}
+          {(alumni?.role != "admin" ? navigationUser : navigationAdmin).map(
+            (item) => (
+              <DisclosureButton
+                key={item.name}
+                as="a"
+                href={item.href}
+                aria-current={item.current ? "page" : undefined}
+                className={classNames(
+                  item.current
+                    ? "bg-gray-900 text-white dark:bg-gray-950/50"
+                    : "text-gray-300 hover:bg-white/5 hover:text-white",
+                  "block rounded-md px-3 py-2 text-base font-medium",
+                )}
+              >
+                {item.name}
+              </DisclosureButton>
+            ),
+          )}
         </div>
       </DisclosurePanel>
     </Disclosure>
