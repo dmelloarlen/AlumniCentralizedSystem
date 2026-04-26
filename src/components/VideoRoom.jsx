@@ -6,6 +6,8 @@ import axios from "axios";
 const { ZegoUIKitPrebuilt } = pkg;
 const SERVER_SECERATE = import.meta.env.VITE_ZEGO_SERVER_SECERATE;
 const APP_ID = import.meta.env.VITE_ZEGO_APP_ID;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL
+
 
 function VideoRoom() {
   const meetingRef = useRef(null);
