@@ -36,7 +36,7 @@ export default function Alumnis() {
     const fetchSuggestions = async () => {
       const token = localStorage.getItem("token");
 
-      const res = await axios.get("http://localhost:5000/user/suggestions", {
+      const res = await axios.get(`${BASE_URL}/user/suggestions`, {
         headers: { Authorization: token },
       });
 
