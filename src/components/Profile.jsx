@@ -48,6 +48,7 @@ export default function Profile() {
 
     fetchData();
   }, [id]);
+  console.log(id)
 
   return (
     <div className="flex justify-center">
@@ -83,14 +84,14 @@ export default function Profile() {
             <div className="sm:mt-5 flex flex-row items-center gap-10 lg:gap-30 justify-center">
               <div
                 className="lg:p-4 cursor-pointer"
-                onClick={() => navigate("/follow")}
+                onClick={() => navigate(`/follow/${id}`)}
               >
                 <h4 className="text-xl font-bold">Followers</h4>
                 {alumni.followers ? alumni.followers.length : 0}
               </div>
               <div
                 className="lg:p-4 cursor-pointer"
-                onClick={() => navigate("/follow")}
+                onClick={() => navigate(`/follow/${id}`)}
               >
                 <h4 className="text-xl font-bold">Following</h4>
                 {alumni.following ? alumni.following.length : 0}

@@ -1,5 +1,7 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import React, { useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const sampleData = [
     {
@@ -23,6 +25,39 @@ const sampleData = [
 export default function Follow() {
 
     const navigate = useNavigate();
+    const {id} = useParams();
+    const [alumni, setAlumni] = React.useState({});
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      let res;
+
+      if (id) {
+        // 🔹 Fetch other user's profile
+        res = await axios.get(`${BASE_URL}/user/profile/${id}`);
+      } else {
+        // 🔹 Fetch current logged-in user
+        res = await axios.get(`${BASE_URL}/user/profile`, {
+          headers: {
+            Authorization: token,
+          },
+        });
+
+        setCurrentUser(res.data._id); // ✅ no need to decode token
+      }
+
+      setAlumni(res.data);
+    } catch (error) {
+      console.log("Error fetching alumni:", error);
+    }
+  };
+
+  fetchData();
+}, [id]);
+
+  console.log(alumni)
 
   return (
     <div className='flex justify-center'>

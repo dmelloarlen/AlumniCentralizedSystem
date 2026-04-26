@@ -13,6 +13,7 @@ import logo from "../assets/logo.png";
 import { FiLogIn } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const navigationUser = [
@@ -120,7 +121,7 @@ export default function Navbar() {
               <BellIcon aria-hidden="true" className="size-6" />
             </button>
 
-            {localStorage.getItem("token") ? (
+            {alumni && localStorage.getItem("token") ? (
               <Menu as="div" className="relative ml-3">
                 <MenuButton className="relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 cursor-pointer">
                   <span className="text-white px-2 text-xl">
@@ -151,6 +152,7 @@ export default function Navbar() {
                     <div
                       onClick={() => {
                         localStorage.removeItem("token");
+                        toast.success("Logout Sucessfull !!")
                         window.location.reload();
                       }}
                       className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden dark:text-gray-300 dark:data-focus:bg-white/5"

@@ -13,6 +13,7 @@ import { FaSquareXTwitter } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { RxCross1 } from "react-icons/rx";
 import axios from "axios";
+import toast from "react-hot-toast";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function AlumniDetails({
@@ -22,13 +23,45 @@ export default function AlumniDetails({
   target = true,
 }) {
   const [current, setCurrent] = useState();
+  const [pending, setPending] = useState([]);
+  const [accepted, setAccepted] = useState([]);
+  const [following, setFollowing] = useState(false);
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  const checkFollowStatus = async (receiverId) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await axios.get(
+      "http://localhost:5000/user/followstatus",
+      {
+        params: { receiverId },   // ✅ correct
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+
+    return res.data.isFollowing;
+  } catch (err) {
+    console.log("Error checking follow status:", err);
+    return false;
+  }
+};
+
+  useEffect(() => {
+  const fetchStatus = async () => {
+    const status = await checkFollowStatus(alumni?._id);
+    setFollowing(status);
+  };
+
+  fetchStatus();
+}, [alumni?._id]);
 
   useEffect(() => {
     const fetchAlumni = async () => {
       try {
-        const token = localStorage.getItem("token");
-
         const res = await axios.get(`${BASE_URL}/user/Profile`, {
           headers: {
             Authorization: token,
@@ -40,8 +73,28 @@ export default function AlumniDetails({
         console.log("Error fetching alumni:", error);
       }
     };
+    const fetchConnections = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-    fetchAlumni();
+        const res = await axios.get(
+          "http://localhost:5000/user/connect/requests",
+          {
+            headers: { Authorization: token },
+          },
+        );
+        setPending(res.data.pending || []);
+        setAccepted(res.data.accepted || []);
+      } catch (err) {
+        console.log(err.response?.data || err.message);
+      }
+    };
+
+    fetchConnections();
+
+    {
+      token && fetchAlumni();
+    }
   }, []);
 
   const updateConnection = async (id) => {
@@ -59,18 +112,46 @@ export default function AlumniDetails({
       );
 
       if (res.status === 200) {
-        alert("Success:", res.data);
+        toast.success("Success:", res.data);
       }
+      setOpen(false);
     } catch (err) {
-      alert(err.response?.data.error || err.message);
+      toast.error(err.response?.data.error || err.message);
     }
   };
 
-  const isUserConnected = (targetUserId) => {
-    if (!current.connections || !current.connections.length) return false;
+  const getConnectionStatus = (userId) => {
+    const conn = [...pending, ...accepted].find((c) => c.userId._id === userId);
 
-    return current.connections.some((c) => c.userId._id === targetUserId);
+    if (!conn) return "none";
+
+    if (conn.status === "accepted") return "connected";
+
+    if (conn.type === "sent") return "pending_sent";
+
+    if (conn.type === "received") return "pending_received";
   };
+
+const followUser = async (id) => {
+  const token = localStorage.getItem("token");
+
+  try {
+    const res = await axios.post(
+      "http://localhost:5000/user/follow",
+      { receiverId: id },
+      {
+        headers: { Authorization: token },
+      }
+    );
+
+    if (res.status === 200) {
+      setFollowing(res.data.following); // ✅ instant UI update
+      toast.success(res.data.message);
+    }
+  } catch (err) {
+    toast.error("Unable to process request");
+  }
+};
 
   return (
     <div>
@@ -176,18 +257,22 @@ export default function AlumniDetails({
                         onClick={() => {
                           updateConnection(alumni?._id);
                         }}
-                        disabled={isUserConnected(alumni?._id)}
-                        >
-                        {isUserConnected(alumni?._id)
+                        disabled={
+                          token &&
+                          getConnectionStatus(alumni?._id) === "connected"
+                        }
+                      >
+                        {token &&
+                        getConnectionStatus(alumni?._id) !== "connected"
                           ? "Connect +"
-                          : "Conected"}
+                          : "Connected"}
                       </button>
                       <button
                         type="button"
                         className=" w-full justify-center rounded-md bg-blue-500 hover:bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300  mx-3 cursor-pointer"
-                        onClick={() => setOpen(false)}
+                        onClick={() => followUser(alumni?._id)}
                       >
-                        Follow +
+                        {following ? "Unfollow" : "Follow"}
                       </button>
                     </div>
                   </>

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -68,10 +69,9 @@ export default function Login() {
 
     try {
       const res = await axios.post(`${BASE_URL}/auth/login`, payload)
-      console.log(res)
       if(res){
         localStorage.setItem("token",res.data.token)
-        alert("login in sucessfull")
+        toast.success("login in sucessfull")
         navigate('/')
       }
 

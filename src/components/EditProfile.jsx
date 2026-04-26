@@ -43,106 +43,113 @@ function EditProfile() {
     joinedOn: "",
   });
 
+  const [skills, setSkills] = useState([]);
+  const [interests, setInterests] = useState([]);
+  const [skillInput, setSkillInput] = useState("");
+  const [interestInput, setInterestInput] = useState("");
+
   const navigate = useNavigate();
 
-useEffect(() => {
-  const fetchProfile = async () => {
-    try {
-      const token = localStorage.getItem("token")
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-      const res = await axios.get(
-        `${BASE_URL}/user/profile`,
-        {
+        const res = await axios.get(`${BASE_URL}/user/profile`, {
           headers: {
-            Authorization: token
-          }
-        }
-      )
+            Authorization: token,
+          },
+        });
 
-      const user = res.data
+        const user = res.data;
 
-      setProfile({
-        firstName: user.name?.split(" ")[0] || "",
-        lastName: user.name?.split(" ").slice(1).join(" ") || "",
-        about: user.about || "",
-        department: user.department || "",
-        graduationYear: user.graduationYear || "",
-      })
+        setProfile({
+          firstName: user.name?.split(" ")[0] || "",
+          lastName: user.name?.split(" ").slice(1).join(" ") || "",
+          about: user.about || "",
+          department: user.department || "",
+          graduationYear: user.graduationYear || "",
+        });
 
-      setExp(
-        user.experience?.length
-          ? user.experience
-          : [{
-              company: "",
-              designation: "",
-              description: "",
-              startDate: "",
-              endDate: "",
-            }]
-      )
+        setSkills(user.skills || []);
+        setInterests(user.interests || []);
 
-      setEdu(
-        user.education?.length
-          ? user.education
-          : [{
-              institution: "",
-              course: "",
-              branch: "",
-              status: "",
-              yearofPassing: "",
-            }]
-      )
+        setExp(
+          user.experience?.length
+            ? user.experience
+            : [
+                {
+                  company: "",
+                  designation: "",
+                  description: "",
+                  startDate: "",
+                  endDate: "",
+                },
+              ],
+        );
 
-      setCurrentDetails({
-        company: user.currentdetails?.company || "",
-        designation: user.currentdetails?.designation || "",
-        role: user.currentdetails?.role || "",
-        location: user.currentdetails?.location || "",
-        joinedOn: user.currentdetails?.joinedOn
-          ? user.currentdetails.joinedOn.slice(0, 10)
-          : "",
-      })
+        setEdu(
+          user.education?.length
+            ? user.education
+            : [
+                {
+                  institution: "",
+                  course: "",
+                  branch: "",
+                  status: "",
+                  yearofPassing: "",
+                },
+              ],
+        );
 
-      setLoading(false)
-    } catch (err) {
-      console.log(err)
-      setLoading(false)
-    }
-  }
+        setCurrentDetails({
+          company: user.currentdetails?.company || "",
+          designation: user.currentdetails?.designation || "",
+          role: user.currentdetails?.role || "",
+          location: user.currentdetails?.location || "",
+          joinedOn: user.currentdetails?.joinedOn
+            ? user.currentdetails.joinedOn.slice(0, 10)
+            : "",
+        });
 
-  fetchProfile()
-}, [])
-
-const handleSave = async () => {
-  try {
-    const token = localStorage.getItem("token")
-
-    const payload = {
-      name: profile.firstName + " " + profile.lastName,
-      about: profile.about,
-      department: profile.department,
-      graduationYear: profile.graduationYear,
-      experience: experience,
-      education: edu,
-      currentdetails: currentDetails,
-    }
-
-    const res = await axios.patch(
-      `${BASE_URL}/user/profile`,
-      payload,
-      {
-        headers: {
-          Authorization: token
-        }
+        setLoading(false);
+      } catch (err) {
+        console.log(err);
+        setLoading(false);
       }
-    )
-    navigate('/profile')
-    toast.success("Profile Updated")
-  } catch (error) {
-    console.log(error)
-    toast.error("Failed to update profile")
-  }
-}
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const payload = {
+        name: profile.firstName + " " + profile.lastName,
+        about: profile.about,
+        department: profile.department,
+        graduationYear: profile.graduationYear,
+        interests: interests,
+        skills: skills,
+        experience: experience,
+        education: edu,
+        currentdetails: currentDetails,
+      };
+
+      const res = await axios.patch(`${BASE_URL}/user/profile`, payload, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      navigate("/profile");
+      toast.success("Profile Updated");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to update profile");
+    }
+  };
 
   if (false) return <h1 className="p-10">Loading...</h1>;
 
@@ -191,6 +198,92 @@ const handleSave = async () => {
                 setProfile({ ...profile, graduationYear: e.target.value })
               }
             />
+
+            <div className="mb-10">
+              <h2 className="text-xl font-semibold mb-4">Skills</h2>
+
+              <div className="flex gap-2 mb-3">
+                <input
+                  className="border p-3 rounded-lg flex-1"
+                  placeholder="Add skill"
+                  value={skillInput}
+                  onChange={(e) => setSkillInput(e.target.value)}
+                />
+                <button
+                  onClick={() => {
+                    if (skillInput.trim()) {
+                      setSkills([...skills, skillInput.trim()]);
+                      setSkillInput("");
+                    }
+                  }}
+                  className="bg-blue-500 text-white px-4 rounded-lg"
+                >
+                  Add
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {skills.map((s, i) => (
+                  <span
+                    key={i}
+                    className="bg-blue-100 px-3 py-1 rounded-full text-sm flex items-center gap-2"
+                  >
+                    {s}
+                    <button
+                      onClick={() =>
+                        setSkills(skills.filter((_, idx) => idx !== i))
+                      }
+                      className="text-red-500"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="mb-10">
+              <h2 className="text-xl font-semibold mb-4">Interests</h2>
+
+              <div className="flex gap-2 mb-3">
+                <input
+                  className="border p-3 rounded-lg flex-1"
+                  placeholder="Add interest"
+                  value={interestInput}
+                  onChange={(e) => setInterestInput(e.target.value)}
+                />
+                <button
+                  onClick={() => {
+                    if (interestInput.trim()) {
+                      setInterests([...interests, interestInput.trim()]);
+                      setInterestInput("");
+                    }
+                  }}
+                  className="bg-green-500 text-white px-4 rounded-lg"
+                >
+                  Add
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {interests.map((s, i) => (
+                  <span
+                    key={i}
+                    className="bg-green-100 px-3 py-1 rounded-full text-sm flex items-center gap-2"
+                  >
+                    {s}
+                    <button
+                      onClick={() =>
+                        setInterests(interests.filter((_, idx) => idx !== i))
+                      }
+                      className="text-red-500"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
 
             <textarea
               className="border p-3 rounded-lg md:col-span-2"
@@ -270,9 +363,7 @@ const handleSave = async () => {
               />
 
               <button
-                onClick={() =>
-                  setExp(experience.filter((_, i) => i !== index))
-                }
+                onClick={() => setExp(experience.filter((_, i) => i !== index))}
                 className="bg-red-500 text-white px-4 py-2 rounded-lg"
               >
                 Remove
@@ -333,7 +424,7 @@ const handleSave = async () => {
               <input
                 className="border p-3 rounded-lg"
                 placeholder="Branch"
-                value={item.branch  || ""}
+                value={item.branch || ""}
                 onChange={(e) => {
                   const updated = [...edu];
                   updated[index].branch = e.target.value;

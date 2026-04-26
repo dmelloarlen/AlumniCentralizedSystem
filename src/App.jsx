@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "./assets/vite.svg";
 import heroImg from "./assets/hero.png";
@@ -19,9 +19,36 @@ import Dashboard from "./components/admin/Dashboard";
 import AlumniRequests from "./components/admin/AlumniRequests";
 import EditProfile from "./components/EditProfile";
 import Chat from "./components/Chat";
+import { Toaster } from "react-hot-toast";
+import axios from "axios";
+import VideoChat from "./components/VideoChat";
+import VDashboard from "./components/VDashboard";
+import VideoRoom from "./components/VideoRoom";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function App() {
   const [count, setCount] = useState(0);
+  const [alumni, setAlumni] = useState()
+
+  useEffect(() => {
+    const fetchAlumni = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await axios.get(`${BASE_URL}/user/Profile`, {
+          headers: {
+            Authorization: token,
+          },
+        });
+
+        setAlumni(res.data);
+      } catch (error) {
+        console.log("Error fetching alumni:", error);
+      }
+    };
+
+    fetchAlumni();
+  }, []);
 
   return (
     <>
@@ -37,14 +64,18 @@ function App() {
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/connections" element={<MyConnections />} />
           <Route path="/chat" element={<Chat />} />
-          <Route path="/follow" element={<Follow />} />
+          <Route path="/follow/:id" element={<Follow />} />
           <Route path="/editprofile" element={<EditProfile />} />
           <Route path="/requests" element={<AlumniRequests />} />
+          <Route path="/video-chat" element={<VideoChat/>}/>
+          <Route path="/schedule/:id" element={<VDashboard/>}/>
+          <Route path="/meet/:roomId" element={<VideoRoom/>}/>
+          
           {/* Admin Routes */}
           <Route
             path="/admin/dashboard"
             element={
-              <Protected userType={"admin"}>
+              <Protected userType={alumni?.role}>
                 <Dashboard />
               </Protected>
             }
@@ -52,12 +83,13 @@ function App() {
           <Route
             path="/admin/alumnirequests"
             element={
-              <Protected userType={"admin"}>
+              <Protected userType={alumni?.role}>
                 <AlumniRequests />
               </Protected>
             }
           />
         </Routes>
+        <Toaster position="top-center"/>
       </BrowserRouter>
     </>
   );
