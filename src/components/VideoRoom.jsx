@@ -24,7 +24,7 @@ function VideoRoom() {
         const token = localStorage.getItem("token");
 
         const res = await axios.get(
-          `http://localhost:5000/meetings/access/${roomId}`,
+          `${BASE_URL}/meetings/access/${roomId}`,
           {
             headers: {
               Authorization: token,

@@ -69,6 +69,7 @@ export default function Login() {
 
     try {
       const res = await axios.post(`${BASE_URL}/auth/login`, payload)
+      console.log(res)
       if(res){
         localStorage.setItem("token",res.data.token)
         toast.success("login in sucessfull")
@@ -76,7 +77,7 @@ export default function Login() {
       }
 
     } catch (err) {
-      console.log(err)
+      toast.error("Invalid Credentials")
     }
   };
 

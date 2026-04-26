@@ -34,9 +34,9 @@ export default function AlumniDetails({
     const token = localStorage.getItem("token");
 
     const res = await axios.get(
-      "http://localhost:5000/user/followstatus",
+      `${BASE_URL}/user/followstatus`,
       {
-        params: { receiverId },   // ✅ correct
+        params: { receiverId },
         headers: {
           Authorization: token,
         },
@@ -78,7 +78,7 @@ export default function AlumniDetails({
         const token = localStorage.getItem("token");
 
         const res = await axios.get(
-          "http://localhost:5000/user/connect/requests",
+          "${BASE_URL}/user/connect/requests",
           {
             headers: { Authorization: token },
           },
@@ -137,7 +137,7 @@ const followUser = async (id) => {
 
   try {
     const res = await axios.post(
-      "http://localhost:5000/user/follow",
+      `${BASE_URL}/user/follow`,
       { receiverId: id },
       {
         headers: { Authorization: token },
