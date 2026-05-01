@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogBackdrop,
@@ -228,21 +228,49 @@ export const PostVacancy = ({ open, setOpen }) => {
   );
 };
 
-export const CreatePost = ({ open, setOpen, editData }) => {
-  const navigate = useNavigate();
+export const CreatePost = ({ open, setOpen, editData, onPostSaved }) => {
+  const [title, setTitle] = useState(editData?.title || "");
+  const [description, setDescription] = useState(editData?.description || "");
+  const [image, setImage] = useState(null);
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    setTitle(editData?.title || "");
+    setDescription(editData?.description || "");
+    setImage(null);
+  }, [editData, open]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = {
-      postTitle: e.target.postTitle.value,
-      description: e.target.description.value,
-    };
-    console.log(formData);
-    if (!formData.postTitle || !formData.description) {
+    if (!title || !description) {
       alert("Please fill all the fields");
       return;
     }
-    setOpen(false);
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    if (image) formData.append("image", image);
+
+    try {
+      let res;
+      if (editData?._id) {
+        res = await axios.patch(`${BASE_URL}/posts/${editData._id}`, formData, {
+          headers: { Authorization: token, "Content-Type": "multipart/form-data" },
+        });
+      } else {
+        res = await axios.post(`${BASE_URL}/posts`, formData, {
+          headers: { Authorization: token, "Content-Type": "multipart/form-data" },
+        });
+      }
+      if (res.status === 200) {
+        toast.success(editData?._id ? "Post updated" : "Post created");
+        onPostSaved && onPostSaved(res.data);
+        setOpen(false);
+      }
+    } catch (err) {
+      toast.error("Failed to save post");
+      console.log(err);
+    }
   };
 
   return (
@@ -268,13 +296,13 @@ export const CreatePost = ({ open, setOpen, editData }) => {
                 </div>
                 <div className="bg-white pb-4 sm:px-6 sm:pb-4">
                   <h1 className="text-2xl font-medium text-center mt-5">
-                    Create a Post
+                    {editData?._id ? "Edit Post" : "Create a Post"}
                   </h1>
                   <form className="mt-6" onSubmit={handleSubmit}>
                     <div className="mb-4">
                       <label
                         className="block text-gray-700 text-sm font-bold mb-2"
-                        for="jobTitle"
+                        htmlFor="postTitle"
                       >
                         Post Title
                       </label>
@@ -282,12 +310,14 @@ export const CreatePost = ({ open, setOpen, editData }) => {
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         id="postTitle"
                         placeholder="Enter post title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
                       />
                     </div>
                     <div className="mb-4">
                       <label
                         className="block text-gray-700 text-sm font-bold mb-2"
-                        for="description"
+                        htmlFor="description"
                       >
                         Post Description
                       </label>
@@ -295,14 +325,31 @@ export const CreatePost = ({ open, setOpen, editData }) => {
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         id="description"
                         placeholder="Enter post description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
                       ></textarea>
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="postImage"
+                      >
+                        Image (optional)
+                      </label>
+                      <input
+                        className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                        id="postImage"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setImage(e.target.files[0])}
+                      />
                     </div>
                     <div className="flex items-center justify-end gap-3">
                       <button
                         className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-2 rounded-lg focus:outline-none focus:shadow-outline cursor-pointer"
                         type="submit"
                       >
-                        Create Post
+                        {editData?._id ? "Update Post" : "Create Post"}
                       </button>
                       <button
                         className="bg-red-500 hover:bg-red-700 text-white py-2 px-2 rounded-lg focus:outline-none focus:shadow-outline cursor-pointer"
@@ -322,3 +369,4 @@ export const CreatePost = ({ open, setOpen, editData }) => {
     </div>
   );
 };
+

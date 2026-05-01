@@ -19,6 +19,7 @@ import Dashboard from "./components/admin/Dashboard";
 import AlumniRequests from "./components/admin/AlumniRequests";
 import EditProfile from "./components/EditProfile";
 import Chat from "./components/Chat";
+import Posts from "./components/Posts";
 import { Toaster } from "react-hot-toast";
 import axios from "axios";
 import VideoChat from "./components/VideoChat";
@@ -60,11 +61,13 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/alumnis" element={<Alumnis />} />
           <Route path="/internships-jobs" element={<InternshipsJobs />} />
+          <Route path="/posts" element={<Posts />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/connections" element={<MyConnections />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/follow/:id" element={<Follow />} />
+          <Route path="/follow/:id/:type" element={<Follow />} />
           <Route path="/editprofile" element={<EditProfile />} />
           <Route path="/requests" element={<AlumniRequests />} />
           <Route path="/video-chat" element={<VideoChat/>}/>

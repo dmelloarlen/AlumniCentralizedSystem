@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CreatePost, PostVacancy } from "./ProfilePopups";
-import { use } from "react";
 import { useEffect } from "react";
 import axios from "axios";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -10,9 +9,9 @@ export default function Profile() {
   const [jobOpen, setJobOpen] = React.useState(false);
   const [createPostOpen, setCreatePostOpen] = React.useState(false);
   const [editData, setEditData] = React.useState(null);
-  const [selectedAlumni, setSelectedAlumni] = React.useState(null);
   const [alumni, setAlumni] = React.useState({});
   const [currentUser, setCurrentUser] = React.useState(null);
+  const [posts, setPosts] = React.useState([]);
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -48,7 +47,32 @@ export default function Profile() {
 
     fetchData();
   }, [id]);
-  console.log(id)
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const profileId = id || currentUser;
+        if (!profileId) return;
+        const res = await axios.get(`${BASE_URL}/posts/user/${profileId}`);
+        setPosts(res.data);
+      } catch (error) {
+        console.log("Error fetching posts:", error);
+      }
+    };
+    fetchPosts();
+  }, [id, currentUser]);
+
+  const handleDeletePost = async (postId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`${BASE_URL}/posts/${postId}`, {
+        headers: { Authorization: token },
+      });
+      setPosts((prev) => prev.filter((p) => p._id !== postId));
+    } catch (err) {
+      console.log("Error deleting post:", err);
+    }
+  };
 
   return (
     <div className="flex justify-center">
@@ -84,14 +108,14 @@ export default function Profile() {
             <div className="sm:mt-5 flex flex-row items-center gap-10 lg:gap-30 justify-center">
               <div
                 className="lg:p-4 cursor-pointer"
-                onClick={() => navigate(`/follow/${id}`)}
+                onClick={() => navigate(`/follow/${id || currentUser}/followers`)}
               >
                 <h4 className="text-xl font-bold">Followers</h4>
                 {alumni.followers ? alumni.followers.length : 0}
               </div>
               <div
                 className="lg:p-4 cursor-pointer"
-                onClick={() => navigate(`/follow/${id}`)}
+                onClick={() => navigate(`/follow/${id || currentUser}/following`)}
               >
                 <h4 className="text-xl font-bold">Following</h4>
                 {alumni.following ? alumni.following.length : 0}
@@ -188,31 +212,44 @@ export default function Profile() {
           <hr />
           <section className="m-3">
             <h4 className="text-2xl font-medium mb-4">Posts</h4>
-            <div className="bg-white shadow-xl rounded-xl p-6 mb-4 hover:scale-102 transition-transform duration-300">
-              <h5 className="text-lg font-medium mb-2">Post Title</h5>
-              <p className="text-sm mb-4">
-                This is a sample post description. It can be about an
-                internship, job, or any other update.
-              </p>
-              <div className="flex gap-2 justify-end">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditData({});
-                    setCreatePostOpen(true);
-                  }}
-                  className=" bg-blue-500 hover:bg-blue-600 text-white cursor-pointer shadow-lg font-medium  rounded-4xl text-xs px-3 py-1.5"
-                >
-                  Edit Post
-                </button>
-                <button
-                  type="button"
-                  className=" bg-red-500 hover:bg-red-600 text-white cursor-pointer shadow-lg font-medium  rounded-4xl text-xs px-3 py-1.5"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
+            {posts.length === 0 ? (
+              <p className="text-gray-500">No posts yet.</p>
+            ) : (
+              posts.map((post) => (
+                <div key={post._id} className="bg-white shadow-xl rounded-xl p-6 mb-4 hover:scale-102 transition-transform duration-300">
+                  {post.image && (
+                    <img
+                      src={`${BASE_URL}${post.image}`}
+                      alt="post"
+                      className="w-full max-h-64 object-cover rounded-lg mb-4"
+                    />
+                  )}
+                  <h5 className="text-lg font-medium mb-2">{post.title}</h5>
+                  <p className="text-sm mb-4">{post.description}</p>
+                  {alumni?._id === currentUser && (
+                    <div className="flex gap-2 justify-end">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditData(post);
+                          setCreatePostOpen(true);
+                        }}
+                        className="bg-blue-500 hover:bg-blue-600 text-white cursor-pointer shadow-lg font-medium rounded-4xl text-xs px-3 py-1.5"
+                      >
+                        Edit Post
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeletePost(post._id)}
+                        className="bg-red-500 hover:bg-red-600 text-white cursor-pointer shadow-lg font-medium rounded-4xl text-xs px-3 py-1.5"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
           </section>
         </div>
       )) || <p>Loading...</p>}
@@ -222,6 +259,14 @@ export default function Profile() {
         open={createPostOpen}
         setOpen={setCreatePostOpen}
         editData={editData}
+        onPostSaved={(savedPost) => {
+          setPosts((prev) =>
+            editData?._id
+              ? prev.map((p) => (p._id === savedPost._id ? savedPost : p))
+              : [savedPost, ...prev]
+          );
+          setEditData(null);
+        }}
       />
     </div>
   );

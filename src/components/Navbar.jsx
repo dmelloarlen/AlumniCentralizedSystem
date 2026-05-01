@@ -19,6 +19,7 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const navigationUser = [
   { name: "Alumnis", href: "/alumnis", current: false },
   { name: "Internships / Jobs", href: "/internships-jobs", current: false },
+  { name: "Posts", href: "/posts", current: false },
   { name: "My Connections", href: "/connections", current: false },
 ];
 
@@ -26,6 +27,7 @@ const navigationAdmin = [
   { name: "Dashboard", href: "/admin/dashboard", current: true },
   { name: "Alumnis", href: "/alumnis", current: false },
   { name: "Internships / Jobs", href: "/internships-jobs", current: false },
+  { name: "Posts", href: "/posts", current: false },
   { name: "Alumni Requestes", href: "/requests", current: false },
 ];
 
